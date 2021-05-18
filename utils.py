@@ -8,22 +8,21 @@ from pathlib import Path
 from IPython import embed
 from IPython.display import Audio
 
-def load_metadata():
-	download_path = str(Path.cwd()) + '/UrbanSound8K'
+def load_metadata(metadata_file):
+	# download_path = str(Path.cwd()) + '/UrbanSound8K'
+	# metadata_file = download_path + '/metadata/UrbanSound8K.csv'
 
 	# Read metadata file
-	metadata_file = download_path + '/metadata/UrbanSound8K.csv'
 	df = pd.read_csv(metadata_file)
 
 	# Construct file path by concatenating fold and file name
-	df['relative_path'] = '/fold' + df['fold'].astype(str) + '/' + df['slice_file_name'].astype(str)
+	df['relative_path'] = 'audio/fold' + df['fold'].astype(str) + '/' + df['slice_file_name'].astype(str)
 
 	# Take relevant columns
 	df = df[['relative_path', 'classID']]
-	embed()
 	return df
 
-class AudioUtil():
+class audio_transform():
 	
 	# Load an audio file. Return the signal as a tensor and the sample rate
 	@staticmethod
@@ -123,3 +122,4 @@ class AudioUtil():
 			aug_spec = transforms.TimeMasking(time_mask_param)(aug_spec, mask_value)
 
 		return aug_spec
+

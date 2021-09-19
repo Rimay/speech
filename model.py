@@ -9,7 +9,7 @@ class model(nn.Module):
         super().__init__()
         self.layers = []
         in_channel = [2, 8, 16, 32]
-        out_channel = [8, 16, 32, 64]
+        out_channel = [8, 16, 32,64]
         kernel_size = [(5, 5), (3, 3), (3, 3), (3, 3)]
         padding = [(2, 2), (1, 1), (1, 1), (1, 1)]
 

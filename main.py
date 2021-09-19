@@ -41,7 +41,7 @@ def train(model, train_dl, epochs):
             _, l = torch.max(pred, 1)
             correct_pred += (l == labels).sum().item()
             total_pred += l.shape[0]
-            if (i + 1) % 50 == 0:
+            if (i + 1) % 10 == 0:
                 print('[e {:}, itr {:}] loss {:.3f}'.format(e, i, loss))
                 writer.add_scalar('loss', loss, cnt)
                 writer.add_scalar('precision', (l == labels).sum().item() / l.shape[0], cnt)
@@ -51,6 +51,9 @@ def train(model, train_dl, epochs):
         print('------------------------------------------------------------------')
         print('epoch: {:}, loss: {:.2f}, precision: {:.2f}'.format(e, losses / batch_num, correct_pred / total_pred))
         print('------------------------------------------------------------------')
+        if e % 10 == 9:
+            torch.save(model, './models/epoch_{:}.model'.format(e + 1))
+
 
 def infer(model, val_dl):
     correct_pred, total_pred = 0, 0
@@ -67,7 +70,7 @@ def infer(model, val_dl):
     print('------------------------------------------------------------------')
     print('Val Accuracy: {:.2f}, Total items:{:}'.format(correct_pred / total_pred, total_pred))
     print('------------------------------------------------------------------')
-    torch.save(model, './models')
+    torch.save(model, './models/final.model')
 
 
 if __name__ == '__main__':
@@ -79,17 +82,19 @@ if __name__ == '__main__':
     num_items = len(ds)
     num_train = int(num_items * 0.8)
     num_val = num_items - num_train
+    print('----- train num: {:}'.format(num_train))
+    print('----- val num: {:}'.format(num_val))
 
     train_ds, val_ds = random_split(ds, [num_train, num_val])
-    train_dl, val_dl = torch.utils.data.DataLoader(train_ds, batch_size=16, shuffle=True),\
-                        torch.utils.data.DataLoader(val_ds, batch_size=16, shuffle=False)
+    train_dl, val_dl = torch.utils.data.DataLoader(train_ds, batch_size=32, shuffle=True),\
+                        torch.utils.data.DataLoader(val_ds, batch_size=32, shuffle=False)
 
     print('----- creating model')
     model = model().to(device)
 
 
     print('----- start training')
-    train(model, train_dl, epochs=100)
+    train(model, train_dl, epochs=1000)
 
     print('----- inferring')
     infer(model, val_dl)
